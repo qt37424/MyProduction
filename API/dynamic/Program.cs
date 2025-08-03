@@ -1,7 +1,22 @@
+using DynamicApi.Models;
+using DynamicApi.Services;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Add MongoDB settings
+builder.Services.Configure<MongoSettings>(
+    builder.Configuration.GetSection("MongoDB"));
+
+// Add ProductService
+builder.Services.AddSingleton<ProductService>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Add Controllers and Swagger
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -36,6 +51,8 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
+app.UseAuthorization();
+app.MapControllers();
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
