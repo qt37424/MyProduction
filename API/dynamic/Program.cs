@@ -1,5 +1,6 @@
 using DynamicApi.Models;
 using DynamicApi.Services;
+using DynamicApi.Models.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,8 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<MongoSettings>(
     builder.Configuration.GetSection("MongoDB"));
 
-// Add ProductService
-builder.Services.AddSingleton<ProductService>();
+// Add UserService
+builder.Services.AddSingleton<UserService>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
