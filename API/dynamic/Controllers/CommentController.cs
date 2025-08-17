@@ -6,49 +6,49 @@ namespace DynamicApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PostController : ControllerBase
+public class CommentController : ControllerBase
 {
-    private readonly PostService _postService;
+    private readonly CommentService _commentService;
 
-    public ProductController(PostService postService)
+    public CommentController(CommentService postService)
     {
-        _postService = postService;
+        _commentService = postService;
     }
 
     [HttpGet]
-    public ActionResult<List<Post>> Get() => _postService.Get();
+    public ActionResult<List<Comment>> Get() => _commentService.Get();
 
     [HttpGet("{id}")]
-    public ActionResult<Post> Get(string id)
+    public ActionResult<Comment> Get(string id)
     {
-        var product = _postService.Get(id);
-        if (product == null) return NotFound();
-        return product;
+        var comment = _commentService.Get(id);
+        if (comment == null) return NotFound();
+        return comment;
     }
 
     [HttpPost]
-    public ActionResult Create(Post product)
+    public ActionResult Create(Comment comment)
     {
-        _postService.Create(product);
-        return CreatedAtAction(nameof(Get), new { id = product.Id }, product);
+        _commentService.Create(comment);
+        return CreatedAtAction(nameof(Get), new { id = comment.Id }, comment);
     }
 
     [HttpPut("{id}")]
-    public ActionResult Update(string id, Post product)
+    public ActionResult Update(string id, Comment comment)
     {
-        var existing = _postService.Get(id);
+        var existing = _commentService.Get(id);
         if (existing == null) return NotFound();
-        product.Id = id;
-        _postService.Update(id, product);
+        comment.Id = id;
+        _commentService.Update(id, comment);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public ActionResult Delete(string id)
     {
-        var existing = _postService.Get(id);
+        var existing = _commentService.Get(id);
         if (existing == null) return NotFound();
-        _postService.Remove(id);
+        _commentService.Remove(id);
         return NoContent();
     }
 }

@@ -10,7 +10,7 @@ public class PostController : ControllerBase
 {
     private readonly PostService _postService;
 
-    public ProductController(PostService postService)
+    public PostController(PostService postService)
     {
         _postService = postService;
     }

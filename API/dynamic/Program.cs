@@ -8,8 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<MongoSettings>(
     builder.Configuration.GetSection("MongoDB"));
 
-// Add UserService
+// Add UserService, PostService, CommentService
 builder.Services.AddSingleton<UserService>();
+builder.Services.AddSingleton<PostService>();
+builder.Services.AddSingleton<CommentService>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
