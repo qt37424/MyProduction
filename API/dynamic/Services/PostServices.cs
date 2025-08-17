@@ -1,29 +1,29 @@
-// using Microsoft.Extensions.Options;
-// using MongoDB.Driver;
-// using DynamicApi.Models;
-// using DynamicApi.Models.Settings;
+using Microsoft.Extensions.Options;
+using MongoDB.Driver;
+using DynamicApi.Models;
+using DynamicApi.Models.Settings;
 
-// namespace DynamicApi.Services;
+namespace DynamicApi.Services;
 
-// public class ProductService
-// {
-//     private readonly IMongoCollection<Product> _products;
+public class PostService
+{
+    private readonly IMongoCollection<Post> _posts;
 
-//     public ProductService(IOptions<MongoSettings> mongoSettings)
-//     {
-//         var client = new MongoClient(mongoSettings.Value.ConnectionString);
-//         var database = client.GetDatabase(mongoSettings.Value.DatabaseName);
-//         _products = database.GetCollection<Product>(mongoSettings.Value.CollectionName);
-//     }
+    public PostService(IOptions<MongoSettings> mongoSettings)
+    {
+        var client = new MongoClient(mongoSettings.Value.ConnectionString);
+        var database = client.GetDatabase(mongoSettings.Value.DatabaseName);
+        _posts = database.GetCollection<Post>(mongoSettings.Value.PostsCollectionName);
+    }
 
-//     public List<Product> Get() => _products.Find(p => true).ToList();
+    public List<Post> Get() => _posts.Find(p => true).ToList();
 
-//     public Product Get(string id) => _products.Find(p => p.Id == id).FirstOrDefault();
+    public Post Get(string id) => _posts.Find(p => p.Id == id).FirstOrDefault();
 
-//     public void Create(Product product) => _products.InsertOne(product);
+    public void Create(Post post) => _posts.InsertOne(post);
 
-//     public void Update(string id, Product product) =>
-//         _products.ReplaceOne(p => p.Id == id, product);
+    public void Update(string id, Post post) =>
+        _posts.ReplaceOne(p => p.Id == id, post);
 
-//     public void Remove(string id) => _products.DeleteOne(p => p.Id == id);
-// }
+    public void Remove(string id) => _posts.DeleteOne(p => p.Id == id);
+}
