@@ -29,11 +29,27 @@ import HelloWorld from './components/HelloWorld.vue'
 }
 </style>-->
 
+<script setup lang="ts">
+import { useAuthStore } from './stores/auth';
+const store = useAuthStore();
+</script>
+
 <template>
-  <div class="max-w-5xl mx-auto">
-    <nav class="p-4 flex gap-4 border-b sticky top-0 bg-white/80 backdrop-blur z-10">
-      <router-link to="/" class="font-bold">Server Admin</router-link>
-      <router-link to="/servers">Servers</router-link>
+  <div class="min-h-screen bg-gray-50">
+    <nav class="bg-white border-b sticky top-0 z-10">
+      <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <router-link to="/admin" class="font-semibold">Admin Web</router-link>
+          <router-link v-if="store.user?.role==='admin'" to="/admin/connections" class="text-sm text-gray-600 hover:text-black">Connections</router-link>
+          <router-link v-if="store.user?.role==='admin'" to="/admin/servers" class="text-sm text-gray-600 hover:text-black">Servers</router-link>
+          <router-link v-if="store.user?.role==='admin'" to="/admin/users" class="text-sm text-gray-600 hover:text-black">Users</router-link>
+        </div>
+        <div class="flex items-center gap-3">
+          <span v-if="store.user" class="text-sm text-gray-600">{{ store.user.username }} ({{ store.user.role }})</span>
+          <button v-if="store.user" @click="store.logout(); $router.push('/login')" class="px-3 py-1.5 rounded-lg bg-black text-white text-sm">Logout</button>
+          <router-link v-else to="/login" class="px-3 py-1.5 rounded-lg bg-black text-white text-sm">Login</router-link>
+        </div>
+      </div>
     </nav>
     <router-view />
   </div>

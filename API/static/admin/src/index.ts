@@ -1,24 +1,30 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import http from 'http';
-import { serversRouter } from './routes/servers.js';
-import { logsRouter } from './routes/logs.js';
-import { authRouter } from './routes/auth.js';
-import { attachWS } from './ws.js';
+import pool from './db.js';
+import { createAdminIfNotExists } from './services/users.service.js';
+import authRoutes from './routes/auth.routes.js';
+import adminRoutes from './routes/admin.routes.js';
+import usersRoutes from './routes/users.routes.js';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/auth', authRouter);
-app.use('/api/servers', serversRouter);
-app.use('/api/logs', logsRouter);
+app.get('/health', (_req, res) => res.json({ ok: true }));
+app.use('/auth', authRoutes);
+app.use('/admin', adminRoutes);
+app.use('/users', usersRoutes);
 
-const port = Number(process.env.PORT||5050);
-const server = http.createServer(app);
-attachWS(server);
+const port = Number(process.env.PORT || 4000);
 
-server.listen(port, ()=>{
-  console.log(`[api] listening on http://localhost:${port}`);
+async function start() {
+  await pool.query('SELECT 1');
+  await createAdminIfNotExists();
+  app.listen(port, () => console.log(`API listening on http://localhost:${port}`));
+}
+
+start().catch((e) => {
+  console.error('Failed to start API', e);
+  process.exit(1);
 });
