@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { findUserByUsername, verifyPassword, issueToken } from '../services/users.service.js';
 import { UserRole } from '../roles.js';
 
+import bcrypt from 'bcryptjs';
+
 const router = Router();
 
 router.post('/login', async (req, res) => {
@@ -9,10 +11,10 @@ router.post('/login', async (req, res) => {
   if (!username || !password) return res.status(400).json({ message: 'Missing credentials' });
 
   const user = await findUserByUsername(username);
-  if (!user) return res.status(401).json({ message: 'Invalid username or password' });
+  if (!user) return res.status(401).json({ message: 'Invalid username' });
 
   const ok = await verifyPassword(password, user.password_hash);
-  if (!ok) return res.status(401).json({ message: 'Invalid username or password' });
+  if (!ok) return res.status(401).json({ message: 'Invalid password' });
 
   const token = issueToken({ id: user.id, role: user.role as UserRole });
   res.json({ token, user: { id: user.id, username: user.username, role: user.role } });

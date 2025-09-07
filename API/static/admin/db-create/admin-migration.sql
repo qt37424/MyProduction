@@ -46,6 +46,6 @@ CREATE TABLE IF NOT EXISTS connections (
 
 -- Default user (admin/admin123) - change it after running 
 INSERT INTO users (username, password_hash, role)
-VALUES ('admin', '$2a$10$eB4QipDqA9Lk3S4Xo0G6sOpWeT3QfM4pN1fFUp.e3ZwnmAHLf5Qq6', 'admin')
+VALUES ('admin', '$2a$12$yvZQuoKrt1qCEQM1R9t0B.5XORbIT6xUsXoRe4ANlpxH1ZOBdTq3O', 'admin')
 ON DUPLICATE KEY UPDATE username = username;
 -- Password hash above = bcrypt("admin123")
