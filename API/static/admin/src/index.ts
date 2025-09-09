@@ -1,3 +1,18 @@
+/*
+ * ============================================================================
+ * File        : index.ts
+ * Description : Entry point for package/module
+ * ============================================================================
+ * History
+ * ============================================================================
+ * Number | Date(YYYYMMDD) | Description
+ * -------|----------------|----------------------------------------------------------------
+ *      1 |   2025-09-02   | Initial version
+ *      2 |   2025-09-09   | Fix bug CORS when connecting API
+ * 
+ * ============================================================================
+ */
+
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
@@ -8,7 +23,10 @@ import adminRoutes from './routes/admin.routes.js';
 import usersRoutes from './routes/users.routes.js';
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: process.env.CLIENT_URL, // web admin url // @2
+  credentials: true // allow sending cookie/token // @2
+}));
 app.use(express.json());
 
 app.get('/health', (_req, res) => res.json({ ok: true }));

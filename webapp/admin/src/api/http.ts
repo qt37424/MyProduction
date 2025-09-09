@@ -1,11 +1,24 @@
+/*
+ * ============================================================================
+ * File        : http.ts
+ * Description : Scaffold for making wrapper services in axios
+ * ============================================================================
+ * History
+ * ============================================================================
+ * Number | Date(YYYYMMDD) | Description
+ * -------|----------------|----------------------------------------------------------------
+ *      1 |   2025-09-02   | Initial version
+ * 
+ * ============================================================================
+ */
+
 import axios from 'axios';
 import { useAuthStore } from '../stores/auth';
 
-// const http = axios.create();
-
 const http = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
+  timeout: 10000,
 });
 
 http.interceptors.request.use((config) => {

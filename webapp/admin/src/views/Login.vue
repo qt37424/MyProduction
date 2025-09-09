@@ -1,26 +1,45 @@
-<script setup lang="ts">
-import { ref } from 'vue';
-import http from '../api/http';
-// import api from "../services/api";
-import { useAuthStore } from '../stores/auth';
-import { useRouter, useRoute } from 'vue-router';
+/*
+ * ============================================================================
+ * File        : Login.vue
+ * Description : Login view of admin page
+ * ============================================================================
+ * History
+ * ============================================================================
+ * Number | Date(YYYYMMDD) | Description
+ * -------|----------------|----------------------------------------------------------------
+ *      1 |   2025-09-02   | Initial version
+ * 
+ * ============================================================================
+ */
 
-const username = ref('');
-const password = ref('');
+<script setup lang="ts">
+import { ref } from "vue";
+import http from "../api/http";
+import { useAuthStore } from "../stores/auth";
+import { useRouter, useRoute } from "vue-router";
+
+const username = ref("");
+const password = ref("");
 const loading = ref(false);
-const error = ref('');
+const error = ref("");
 const store = useAuthStore();
 const router = useRouter();
 const route = useRoute();
 
 async function login() {
-  error.value = ''; loading.value = true;
+  error.value = "";
+  loading.value = true;
   try {
-    const { data } = await http.post('/auth/login', { username: username.value, password: password.value });
+    const { data } = await http.post("/auth/login", {
+      username: username.value,
+      password: password.value,
+    });
+    console.log(username.value);
+    console.log(password.value);
     store.setAuth(data.token, data.user);
-    router.push((route.query.redirect as string) || '/admin');
+    router.push((route.query.redirect as string) || "/admin");
   } catch (e: any) {
-    error.value = e?.response?.data?.message || 'Login failed';
+    error.value = e?.response?.data?.message || "Login failed";
   } finally {
     loading.value = false;
   }
@@ -33,15 +52,31 @@ async function login() {
       <h1 class="text-xl font-semibold">Admin Login</h1>
       <div class="space-y-2">
         <label class="text-sm">Username</label>
-        <input v-model="username" class="w-full border rounded-lg p-2" />
+        <input
+          id="username"
+          v-model="username"
+          type="text"
+          class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+          placeholder="Enter your username"
+        />
       </div>
       <div class="space-y-2">
         <label class="text-sm">Password</label>
-        <input v-model="password" type="password" class="w-full border rounded-lg p-2" />
+        <input
+          id="password"
+          v-model="password"
+          type="password"
+          class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+          placeholder="Enter your password"
+        />
       </div>
       <p v-if="error" class="text-sm text-red-600">{{ error }}</p>
-      <button @click="login" :disabled="loading" class="w-full rounded-xl p-2 bg-black text-white">
-        {{ loading ? 'Logging in…' : 'Login' }}
+      <button
+        @click="login"
+        :disabled="loading"
+        class="w-full rounded-xl p-2 bg-black text-white"
+      >
+        {{ loading ? "Logging in…" : "Login" }}
       </button>
     </div>
   </div>
