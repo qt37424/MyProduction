@@ -11,13 +11,13 @@ router.post('/login', async (req, res) => {
   if (!username || !password) return res.status(400).json({ message: 'Missing credentials' });
 
   const user = await findUserByUsername(username);
-  if (!user) return res.status(401).json({ message: 'Invalid username' });
+  if (!user) return res.status(401).json({ message: 'Invalid username', success: false });
 
   const ok = await verifyPassword(password, user.password_hash);
-  if (!ok) return res.status(401).json({ message: 'Invalid password' });
+  if (!ok) return res.status(401).json({ message: 'Invalid password', success: false });
 
   const token = issueToken({ id: user.id, role: user.role as UserRole });
-  res.json({ token, user: { id: user.id, username: user.username, role: user.role } });
+  res.json({ token, user: { id: user.id, username: user.username, role: user.role }, success: true });
 });
 
 export default router;

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { useAuthStore } from './stores/auth';
+import { authStore } from './api/authen/auth';
 import Login from './views/Login.vue';
 import AdminDashboard from './views/AdminDashboard.vue';
 import Connections from './views/Connections.vue';
@@ -19,9 +19,9 @@ const router = createRouter({
 });
 
 router.beforeEach((to) => {
-  const store = useAuthStore();
+  const store = authStore.getToken();
   if (to.meta.requiresAdmin) {
-    if (!store.token || store.user?.role !== 'admin') {
+    if (!store.token) {
       return { path: '/login', query: { redirect: to.fullPath } };
     }
   }

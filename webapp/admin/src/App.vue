@@ -1,56 +1,264 @@
-<!-- <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
-</template>
-
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>-->
-
-<script setup lang="ts">
-import { useAuthStore } from './stores/auth';
-const store = useAuthStore();
-</script>
-
-<template>
-  <div class="min-h-screen bg-gray-50">
-    <nav class="bg-white border-b sticky top-0 z-10">
-      <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <router-link to="/admin" class="font-semibold">Admin Web</router-link>
-          <router-link v-if="store.user?.role==='admin'" to="/admin/connections" class="text-sm text-gray-600 hover:text-black">Connections</router-link>
-          <router-link v-if="store.user?.role==='admin'" to="/admin/servers" class="text-sm text-gray-600 hover:text-black">Servers</router-link>
-          <router-link v-if="store.user?.role==='admin'" to="/admin/users" class="text-sm text-gray-600 hover:text-black">Users</router-link>
-        </div>
-        <div class="flex items-center gap-3">
-          <span v-if="store.user" class="text-sm text-gray-600">{{ store.user.username }} ({{ store.user.role }})</span>
-          <button v-if="store.user" @click="store.logout(); $router.push('/login')" class="px-3 py-1.5 rounded-lg bg-black text-white text-sm">Logout</button>
-          <router-link v-else to="/login" class="px-3 py-1.5 rounded-lg bg-black text-white text-sm">Login</router-link>
-        </div>
+  <div id="app">
+    <!-- Global Header - Display all pages -->
+    <ProfessionalHeader
+      @navigate="handleGlobalNavigation"
+      @logout="handleLogout"
+      :current-route="currentRoute"
+      :is-authenticated="isAuthenticated"
+      :menu-config="headerMenuConfig"
+    />
+    <!-- Main Content - Router View -->
+    <main class="app-main">
+      <router-view
+        @login-success="handleLoginSuccess"
+        @navigate="handleGlobalNavigation"
+      />
+    </main>
+    <!-- Global Background for whole app -->
+    <div class="global-background">
+      <div class="gradient-orb gradient-orb-1"></div>
+      <div class="gradient-orb gradient-orb-2"></div>
+      <div class="gradient-orb gradient-orb-3"></div>
+      <div class="floating-particles">
+        <div class="particle" v-for="n in 20" :key="n"></div>
       </div>
-    </nav>
-    <router-view />
+    </div>
+    <!-- Global Loading Overlay (if neccessary) -->
+    <div v-if="isGlobalLoading" class="global-loading">
+      <div class="loading-spinner">
+        <i>⏳</i>
+        <span>Loading...</span>
+      </div>
+    </div>
+    <!-- Global Notifications Container -->
+    <div class="notifications-container">
+      <div
+        v-for="notification in notifications"
+        :key="notification.id"
+        :class="['notification', `notification-${notification.type}`]"
+      >
+        <i class="notification-icon">{{
+          getNotificationIcon(notification.type)
+        }}</i>
+        <span>{{ notification.message }}</span>
+        <button
+          @click="removeNotification(notification.id)"
+          class="notification-close"
+        >
+          ×
+        </button>
+      </div>
+    </div>
   </div>
 </template>
+<script>
+// Import components
+import ProfessionalHeader from "./components/Header.vue";
+import { authStore } from './api/authen/auth';
+export default {
+  name: "App",
+  components: {
+    ProfessionalHeader,
+  },
+  data() {
+    return {
+      currentRoute: "login", // Track current route
+      isGlobalLoading: false,
+      notifications: [], // Global notifications
+      notificationId: 0,
+      userToken: null, // Store authentication token
+      userData: null, // Store user data
+
+      headerMenuConfig: { // custom dashboard
+        showOnLogin: ['home', 'contact'], // When Login
+        showOnDashboard: ['home', 'services', 'blog'], // Custom for dashboard
+        showOnPublic: ['home', 'about', 'services', 'showcase', 'blog', 'contact']
+      }
+    };
+  },
+  computed: {
+    isAuthenticated() {
+      // Check if user has valid token
+      return !!this.userToken && !!this.userData;
+    },
+  },
+  watch: {
+    // Watch route changes
+    $route(to) {
+      this.currentRoute = to.name || to.path.replace("/", "") || "home";
+      console.log("Route changed to:", this.currentRoute);
+    },
+  },
+  methods: {
+    handleGlobalNavigation(section) {
+      console.log(`Global navigation to: ${section}`);
+      this.currentRoute = section;
+      // Handle navigation với Vue Router
+      if (this.$router) {
+        // Map sections to actual routes
+        const routeMap = {
+          'home': '/',
+          'about': '/about',
+          'services': '/services',
+          'showcase': '/showcase', 
+          'blog': '/blog',
+          'contact': '/contact',
+          'purchase': '/purchase',
+          'login': '/login',
+          'dashboard': '/dashboard'
+        };
+        const targetRoute = routeMap[section] || `/${section}`;
+        if (this.$route.path !== targetRoute) {
+          this.$router.push(targetRoute).catch((err) => {
+            console.log(
+              "Navigation error (this is normal for same route):",
+              err.message
+            );
+          });
+        }
+      }
+    },
+
+    handleLoginSuccess(userData) {
+      console.log('✅ Login successful:', userData);
+  
+      // 1. VALIDATE: Check token is existed?
+      if (!userData.token) {
+        console.error('❌ Missing token in userData');
+        this.showNotification('error', 'Login failed: Invalid response');
+        return; // STOP if there is no token
+      }
+
+      // 2. Store token
+      const saved = authStore.saveAuth(userData.token, {
+        username: userData.username,
+        loginTime: new Date().toISOString(),
+        rememberMe: userData.rememberMe
+      });
+
+      // 3. CHECK result
+      if (!saved) {
+        this.showNotification('error', 'Failed to save authentication');
+        return;
+      }
+
+      // 4. Update UI
+      this.$forceUpdate();
+      this.showNotification('success', `Welcome back, ${userData.user.username}!`);
+
+      // Redirect to dashboard after short delay
+      setTimeout(() => {
+        this.handleGlobalNavigation("dashboard");
+      }, 1500);
+    },
+
+    handleLogout() {
+      console.log('Logout requested');
+
+      const username = this.userData ? this.userData.username : 'User';
+
+      // Clear authentication data
+      this.userToken = null;
+      this.userData = null;
+
+      // Force Vue to update
+      this.$forceUpdate();
+      this.$nextTick(() => {
+        console.log('Authentication state after logout:', {
+          token: this.userToken,
+          user: this.userData,
+          isAuthenticated: this.isAuthenticated,
+          authVersion: this.authVersion
+        });
+      });
+    },
+
+    // Global notification system
+    showNotification(type, message, duration = 4000) {
+      const notification = {
+        id: ++this.notificationId,
+        type, // success, error, warning, info
+        message,
+        timestamp: Date.now(),
+      };
+      this.notifications.push(notification);
+      // Auto remove after duration
+      if (duration > 0) {
+        setTimeout(() => {
+          this.removeNotification(notification.id);
+        }, duration);
+      }
+    },
+
+    removeNotification(id) {
+      const index = this.notifications.findIndex((n) => n.id === id);
+      if (index > -1) {
+        this.notifications.splice(index, 1);
+      }
+    },
+
+    getNotificationIcon(type) {
+      const icons = {
+        success: "✅",
+        error: "❌",
+        warning: "⚠️",
+        info: "ℹ️",
+      };
+      return icons[type] || "ℹ️";
+    },
+
+    // Global loading methods
+    showGlobalLoading() {
+      this.isGlobalLoading = true;
+    },
+
+    hideGlobalLoading() {
+      this.isGlobalLoading = false;
+    },
+
+    // Global error handler
+    handleGlobalError(error) {
+      console.error("Global error:", error);
+      this.showNotification("error", error.message || "An error occurred");
+      this.hideGlobalLoading();
+    },
+
+    // Check authentication on app start
+    checkAuthentication() {
+    },
+  },
+
+  created() {
+    // Initialize app
+    console.log("App created - initializing...");
+    this.checkAuthentication();
+    // Set current route on app start
+    if (this.$route) {
+      this.currentRoute =
+        this.$route.name || this.$route.path.replace("/", "") || "home";
+    }
+  },
+
+  mounted() {
+    console.log("App mounted successfully");
+    // Add global event listeners if needed
+    window.addEventListener("online", () => {
+      this.showNotification("success", "Connection restored");
+    });
+    window.addEventListener("offline", () => {
+      this.showNotification("warning", "Connection lost", 0); // Don't auto-hide
+    });
+  },
+
+  beforeDestroy() {
+    // Cleanup global event listeners
+    window.removeEventListener("online", () => {});
+    window.removeEventListener("offline", () => {});
+  },
+};
+</script>
+<style scoped>
+/* Import CSS file */
+@import "./static/css/main.css";
+</style>

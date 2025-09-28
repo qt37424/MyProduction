@@ -13,7 +13,7 @@
  */
 
 import axios from 'axios';
-import { useAuthStore } from '../stores/auth';
+import { authStore } from './authen/auth';
 
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -22,8 +22,8 @@ const http = axios.create({
 });
 
 http.interceptors.request.use((config) => {
-  const store = useAuthStore();
-  if (store.token) {
+  const store = authStore.getToken();
+  if (store != null && store.token) { // check token is existed?
     config.headers = config.headers || {};
     (config.headers as any).Authorization = `Bearer ${store.token}`;
   }
