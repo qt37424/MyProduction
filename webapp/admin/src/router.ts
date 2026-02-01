@@ -21,7 +21,7 @@ const router = createRouter({
 router.beforeEach((to) => {
   const store = authStore.getToken();
   if (to.meta.requiresAdmin) {
-    if (!store.token) {
+    if (store != null && !store.token) {
       return { path: '/login', query: { redirect: to.fullPath } };
     }
   }

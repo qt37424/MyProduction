@@ -5,8 +5,7 @@
       @navigate="handleGlobalNavigation"
       @logout="handleLogout"
       :current-route="currentRoute"
-      :is-authenticated="isAuthenticated"
-      :menu-config="headerMenuConfig"
+      :is-authenticated="isAuthenticated.value"
     />
     <!-- Main Content - Router View -->
     <main class="app-main">
@@ -69,18 +68,11 @@ export default {
       notificationId: 0,
       userToken: null, // Store authentication token
       userData: null, // Store user data
-
-      headerMenuConfig: { // custom dashboard
-        showOnLogin: ['home', 'contact'], // When Login
-        showOnDashboard: ['home', 'services', 'blog'], // Custom for dashboard
-        showOnPublic: ['home', 'about', 'services', 'showcase', 'blog', 'contact']
-      }
     };
   },
   computed: {
     isAuthenticated() {
-      // Check if user has valid token
-      return !!this.userToken && !!this.userData;
+      return authStore.isAuthenticated;
     },
   },
   watch: {
@@ -106,7 +98,7 @@ export default {
           'contact': '/contact',
           'purchase': '/purchase',
           'login': '/login',
-          'dashboard': '/dashboard'
+          //'dashboard': '/dashboard'
         };
         const targetRoute = routeMap[section] || `/${section}`;
         if (this.$route.path !== targetRoute) {
@@ -121,36 +113,33 @@ export default {
     },
 
     handleLoginSuccess(userData) {
-      console.log('✅ Login successful:', userData);
-  
-      // 1. VALIDATE: Check token is existed?
-      if (!userData.token) {
+      // console.log('✅ Login successful:', userData);
+
+      if (!userData.token) { // 1. VALIDATE: Check token is existed?
         console.error('❌ Missing token in userData');
         this.showNotification('error', 'Login failed: Invalid response');
-        return; // STOP if there is no token
+        return;
       }
 
-      // 2. Store token
-      const saved = authStore.saveAuth(userData.token, {
-        username: userData.username,
+      const saved = authStore.saveAuth(userData.token, { // 2. Store token
+        username: userData.user.username,
         loginTime: new Date().toISOString(),
-        rememberMe: userData.rememberMe
+        // rememberMe: userData.rememberMe
       });
 
-      // 3. CHECK result
       if (!saved) {
         this.showNotification('error', 'Failed to save authentication');
         return;
       }
 
-      // 4. Update UI
+      // 3. Update UI
       this.$forceUpdate();
       this.showNotification('success', `Welcome back, ${userData.user.username}!`);
 
       // Redirect to dashboard after short delay
       setTimeout(() => {
-        this.handleGlobalNavigation("dashboard");
-      }, 1500);
+        this.handleGlobalNavigation("home");
+      }, 500); // 500ms to redirect to home
     },
 
     handleLogout() {

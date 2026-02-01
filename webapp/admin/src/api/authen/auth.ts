@@ -82,19 +82,21 @@ export const authStore = {
       this._token = tokenId;
       this._userData = userData;
       this._timestamp = timestamp;
+      console.log('✅ Auth saved successfully:');
 
-      console.log('✅ Auth saved successfully:', {
-        username: userData.username,
-        timestamp: new Date(timestamp).toLocaleString(),
-        tokenPreview: tokenId.substring(0, 15) + '...'
-      });
+      // For Debug
+      // console.log('✅ Auth saved successfully:', {
+      //   username: userData.username,
+      //   timestamp: new Date(timestamp).toLocaleString(),
+      //   tokenPreview: tokenId.substring(0, 15) + '...'
+      // });
 
       // Log to localStorage for verification
-      console.log('📦 localStorage keys:', {
-        token: localStorage.getItem(STORAGE_KEYS.TOKEN)?.substring(0, 20) + '...',
-        userData: localStorage.getItem(STORAGE_KEYS.USER_DATA)?.substring(0, 20) + '...',
-        timestamp: localStorage.getItem(STORAGE_KEYS.TIMESTAMP)
-      });
+      // console.log('📦 localStorage keys:', {
+      //   token: localStorage.getItem(STORAGE_KEYS.TOKEN)?.substring(0, 20) + '...',
+      //   userData: localStorage.getItem(STORAGE_KEYS.USER_DATA)?.substring(0, 20) + '...',
+      //   timestamp: localStorage.getItem(STORAGE_KEYS.TIMESTAMP)
+      // });
 
       return true;
     } catch (error) {
@@ -192,12 +194,12 @@ export const authStore = {
 
     const isAuth = !!token && !!userData && !expired;
 
-    console.log('🔐 Auth check:', {
-      hasToken: !!token,
-      hasUserData: !!userData,
-      expired,
-      isAuthenticated: isAuth
-    });
+    // console.log('🔐 Auth check:', {
+    //   hasToken: !!token,
+    //   hasUserData: !!userData,
+    //   expired,
+    //   isAuthenticated: isAuth
+    // });
 
     if (!isAuth && (token || userData)) {
       console.log('⚠️ Authentication invalid, clearing...');
@@ -307,16 +309,18 @@ export const authStore = {
    */
   init() {
     console.log('🔍 Initializing auth store...');
-    
+
     const isAuth = this.isAuthenticated();
     
     if (isAuth) {
-      const userData = this.getUserData();
-      const timeRemaining = this.getTimeRemaining();
-      console.log('✅ Auth restored:', {
-        username: userData?.username,
-        timeRemaining: `${(timeRemaining / (1000 * 60)).toFixed(0)} minutes`
-      });
+      console.log('✅ Auth restored:');
+      // For Debug
+      // const userData = this.getUserData();
+      // const timeRemaining = this.getTimeRemaining();
+      // console.log('✅ Auth restored:', {
+      //   username: userData?.username,
+      //   timeRemaining: `${(timeRemaining / (1000 * 60)).toFixed(0)} minutes`
+      // });
     } else {
       console.log('ℹ️ No valid authentication found');
     }

@@ -55,11 +55,12 @@
 export default {
   name: "ProfessionalHeader",
   props: {
-    currentRoute: {
+    // mapping với tag ProfessionalHeader tại App.vue
+    currentRoute: { // :current-route="currentRoute"
       type: String,
       default: "home",
     },
-    isAuthenticated: {
+    isAuthenticated: { // :isAuthenticated="isAuthenticated"
       type: Boolean,
       default: false,
     },
@@ -67,9 +68,9 @@ export default {
     menuConfig: {
       type: Object,
       default: () => ({
-        showOnLogin: ['home', 'about', 'blog', 'contact'], // Chỉ show những này ở login
-        showOnDashboard: ['home', 'about', 'services', 'showcase', 'blog', 'contact'], // Full menu ở dashboard
-        showOnPublic: ['home', 'about', 'services', 'showcase', 'blog', 'contact'] // Full menu ở public pages
+        showOnLogin: ['home', 'about', 'blog', 'contact'], // Show in login screen
+        showOnDashboard: ['home', 'about', 'services', 'showcase', 'blog', 'contact'], // Full menu in dashboard
+        showOnPublic: ['home', 'about', 'services', 'showcase', 'blog', 'contact'] // Full menu in public pages
       })
     }
   },
@@ -90,15 +91,14 @@ export default {
     // Determine which menu items to show based on current route
     visibleMenuItems() {
       let allowedItems = [];
-      
-      if (this.currentRoute === 'login') {
+      console.log(this.isAuthenticated);
+      if (this.isAuthenticated) {
         allowedItems = this.menuConfig.showOnLogin;
-      } else if (this.currentRoute === 'dashboard') {
-        allowedItems = this.menuConfig.showOnDashboard;
-      } else {
+      }
+      else {
         allowedItems = this.menuConfig.showOnPublic;
       }
-      
+
       return this.allMenuItems.filter(item => allowedItems.includes(item.key));
     },
 
