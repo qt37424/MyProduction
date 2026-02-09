@@ -98,9 +98,9 @@ export default {
           'contact': '/contact',
           'purchase': '/purchase',
           'login': '/login',
-          //'dashboard': '/dashboard'
         };
         const targetRoute = routeMap[section] || `/${section}`;
+
         if (this.$route.path !== targetRoute) {
           this.$router.push(targetRoute).catch((err) => {
             console.log(
