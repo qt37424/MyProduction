@@ -10,7 +10,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/login', component: Login },
-    { path: '/', redirect: '/admin' },
+    { path: '/', redirect: '/admin' }, // chưa có page load cho home
     { path: '/admin', component: AdminDashboard, meta: { requiresAdmin: true } },
     { path: '/admin/connections', component: Connections, meta: { requiresAdmin: true } },
     { path: '/admin/servers', component: Servers, meta: { requiresAdmin: true } },

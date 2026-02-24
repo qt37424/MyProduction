@@ -64,15 +64,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    // Custom menu config
-    menuConfig: {
-      type: Object,
-      default: () => ({
-        showOnLogin: ['home', 'about', 'blog', 'contact'], // Show in login screen
-        showOnDashboard: ['home', 'about', 'services', 'showcase', 'blog', 'contact'], // Full menu in dashboard
-        showOnPublic: ['home', 'about', 'services', 'showcase', 'blog', 'contact'] // Full menu in public pages
-      })
-    }
   },
   data() {
     return {
@@ -84,14 +75,21 @@ export default {
         { key: 'showcase', label: 'SHOWCASE', icon: '🎯' },
         { key: 'blog', label: 'BLOG', icon: '📝' },
         { key: 'contact', label: 'CONTACT', icon: '📞' }
-      ]
+      ],
+      // Custom menu config
+      menuConfig: {
+        showOnLogin: ['home', 'about', 'blog', 'contact'], // Show in login screen
+        showOnDashboard: ['home', 'about', 'services', 'showcase', 'blog', 'contact'], // Full menu in dashboard
+        showOnPublic: ['home', 'about', 'services', 'showcase', 'blog', 'contact'] // Full menu in public pages
+      }
     }
   },
   computed: {
     // Determine which menu items to show based on current route
     visibleMenuItems() {
       let allowedItems = [];
-      console.log(this.isAuthenticated);
+      console.log("visibleMenuItems-isAuthenticated", this.isAuthenticated);
+      console.log("visibleMenuItems-currentRoute", this.currentRoute);
       if (this.isAuthenticated) {
         allowedItems = this.menuConfig.showOnLogin;
       }
@@ -111,14 +109,6 @@ export default {
       // Always show auth button
       return true;
     },
-
-    isLoginPage() {
-      return this.currentRoute === 'login';
-    },
-
-    isDashboard() {
-      return this.currentRoute === 'dashboard';
-    }
   },
   methods: {
     navigateTo(section) {

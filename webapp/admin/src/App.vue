@@ -5,7 +5,7 @@
       @navigate="handleGlobalNavigation"
       @logout="handleLogout"
       :current-route="currentRoute"
-      :is-authenticated="isAuthenticated.value"
+      :is-authenticated="isAuthenticated"
     />
     <!-- Main Content - Router View -->
     <main class="app-main">
@@ -72,14 +72,13 @@ export default {
   },
   computed: {
     isAuthenticated() {
-      return authStore.isAuthenticated;
+      return authStore.isAuthenticated();
     },
   },
   watch: {
     // Watch route changes
     $route(to) {
       this.currentRoute = to.name || to.path.replace("/", "") || "home";
-      console.log("Route changed to:", this.currentRoute);
     },
   },
   methods: {
@@ -215,6 +214,7 @@ export default {
 
     // Check authentication on app start
     checkAuthentication() {
+      // still do nothing here
     },
   },
 
