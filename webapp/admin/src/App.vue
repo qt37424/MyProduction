@@ -5,7 +5,7 @@
       @navigate="handleGlobalNavigation"
       @logout="handleLogout"
       :current-route="currentRoute"
-      :is-authenticated="isAuthenticated"
+      :is-authenticated="authStore.isAuthenticated"
     />
     <!-- Main Content - Router View -->
     <main class="app-main">
@@ -51,10 +51,15 @@
     </div>
   </div>
 </template>
+
+<script setup>
+  import { useAuthStore } from './stores/authen/auth';
+  const authStore = useAuthStore();
+</script>
+
 <script>
 // Import components
 import ProfessionalHeader from "./components/Header.vue";
-import { authStore } from './api/authen/auth';
 export default {
   name: "App",
   components: {
@@ -69,11 +74,6 @@ export default {
       userToken: null, // Store authentication token
       userData: null, // Store user data
     };
-  },
-  computed: {
-    isAuthenticated() {
-      return authStore.isAuthenticated();
-    },
   },
   watch: {
     // Watch route changes
@@ -120,7 +120,8 @@ export default {
         return;
       }
 
-      const saved = authStore.saveAuth(userData.token, { // 2. Store token
+      const authStore = useAuthStore();
+      const saved = authStore.setAuth(userData.token, { // 2. Store token
         username: userData.user.username,
         loginTime: new Date().toISOString(),
         // rememberMe: userData.rememberMe
@@ -251,3 +252,16 @@ export default {
 /* Import CSS file */
 @import "./static/css/main.css";
 </style>
+
+/*
+=======================================================================================
+* File : App.vue
+* Description : Main Page
+=======================================================================================
+* History *
+=======================================================================================
+* Number | Date(YYYYMMDD) | Description
+---------|----------------|------------------------------------------------------------
+*      1 |   2025-09-02   | Initial version
+=======================================================================================
+*/

@@ -8,6 +8,7 @@
 * Number | Date(YYYYMMDD) | Description
 ---------|----------------|------------------------------------------------------------
 *      1 |   2025-09-02   | Initial version
+*      2 |   2026-03-20   | Add store for authentication
 =======================================================================================
 */
 
@@ -125,6 +126,11 @@
     </div>
   </div>
 </template>
+
+<script setup>
+  import { useAuthStore } from '../stores/authen/auth'
+  const authStore = useAuthStore()
+</script>
 
 <script>
 import http from "../api/http";

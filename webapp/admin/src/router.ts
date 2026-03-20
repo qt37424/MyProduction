@@ -1,11 +1,23 @@
+/*
+=======================================================================================
+* File : router.ts
+* Description : Control router in application
+=======================================================================================
+* History *
+=======================================================================================
+* Number | Date(YYYYMMDD) | Description
+---------|----------------|------------------------------------------------------------
+*      1 |   2025-09-02   | Initial version
+=======================================================================================
+*/
+
 import { createRouter, createWebHistory } from 'vue-router';
-import { authStore } from './api/authen/auth';
+import { useAuthStore } from './stores/authen/auth'
 import Login from './views/Login.vue';
 import AdminDashboard from './views/AdminDashboard.vue';
 import Connections from './views/Connections.vue';
 import Servers from './views/Servers.vue';
 import Users from './views/Users.vue';
-
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -19,7 +31,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to) => {
-  const store = authStore.getToken();
+  const store = useAuthStore().getToken();
   if (to.meta.requiresAdmin) {
     if (store == null) {
       console.log(store);
