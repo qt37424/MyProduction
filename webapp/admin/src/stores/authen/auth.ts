@@ -59,12 +59,8 @@ export const useAuthStore = defineStore('auth', () => {
     const token = getToken();
     const userData = getUserData();
     const expired = isExpired();
-    console.log("authStore isAuthenticated - token", token);
-    console.log("authStore isAuthenticated - userData", userData);
-    console.log("authStore isAuthenticated - expired", expired);
 
     const isAuth = !!token.value && !!userData.value && !expired.value;
-    console.log("authStore isAuthenticated - isAuth", isAuth);
 
     if (!isAuth && (token || userData)) {
       console.log('⚠️ Authentication invalid, clearing...');

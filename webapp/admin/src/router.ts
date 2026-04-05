@@ -18,6 +18,7 @@ import AdminDashboard from './views/AdminDashboard.vue';
 import Connections from './views/Connections.vue';
 import Servers from './views/Servers.vue';
 import Users from './views/Users.vue';
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -34,7 +35,6 @@ router.beforeEach((to) => {
   const store = useAuthStore().getToken();
   if (to.meta.requiresAdmin) {
     if (store == null) {
-      console.log(store);
       return { path: '/login', query: { redirect: to.fullPath } };
     }
   }
